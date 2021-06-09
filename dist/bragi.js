@@ -50,7 +50,6 @@ var Transports = require('./bragi/transports/Transports');
 var transports = require('./bragi/transports');
 
 // TODO: This should probably be in the transports
-var STYLES = require('./bragi/styles');
 var SYMBOLS = require('./bragi/symbols');
 
 (function(root, factory) {
@@ -109,8 +108,6 @@ var SYMBOLS = require('./bragi/symbols');
     // --------------------------------------
     // Expose styles to users
     // --------------------------------------
-    LOGGER.util.colors = STYLES.colors;
-
     // some symbols for the user
     LOGGER.util.symbols = SYMBOLS; 
 
@@ -126,9 +123,9 @@ var SYMBOLS = require('./bragi/symbols');
         // groupsEnabled: specifies what logs to display. Can be either:
         //      1. an {array} of log levels 
         //          e.g,. ['error', 'myLog1', 'myLog2']
-        //    or 
+        //    or
         //
-        //      2. a {Boolean} : true to see *all* log messages, false to 
+        //      2. a {Boolean} : true to see *all* log messages, false to
         //          see *no* messages
         //
         // groupsEnabled acts as a "whitelist" for what messages to log
@@ -138,7 +135,7 @@ var SYMBOLS = require('./bragi/symbols');
         // Levels specified here take priority over log groups specified in groupsEnabled
         groupsDisabled: [],
 
-        // Store stack trace? Provides more info, but adds overhead. Very useful 
+        // Store stack trace? Provides more info, but adds overhead. Very useful
         // when in development, tradeoffs should be considered when in production
         storeStackTrace: false
     };
@@ -155,23 +152,23 @@ var SYMBOLS = require('./bragi/symbols');
     // NOTE: Do not 
     var _defaultTransports = [
         new transports.Console({
-            showMeta: true, 
+            showMeta: true,
             showStackTrace: false
         })
     ];
 
     // Other transports include:
     //      new transports.ConsoleJSON({}) 
-    //      
+    // 
     //      new transports.History({
     //          storeEverything: false
-    //      }) 
+    //      })
     //
     //      new transports.File({
     //          filename: '/tmp/test.json'
     //         })
 
-    for(var i=0; i < _defaultTransports.length; i++){
+    for(var i = 0; i < _defaultTransports.length; i++){
         LOGGER.transports.add( _defaultTransports[i] );
     }
 
@@ -185,9 +182,9 @@ var SYMBOLS = require('./bragi/symbols');
     //
     // ----------------------------------
     LOGGER.addGroup = function addGroup ( group ){
-        // Add a passed in group (either a {String} or {RegExp}) to the 
+        // Add a passed in group (either a {String} or {RegExp}) to the
         // groupsEnabled array
-        
+
         // If groupsEnabled is true or false, turn it into an array
         var groupsEnabled = LOGGER.options.groupsEnabled;
 
@@ -196,8 +193,8 @@ var SYMBOLS = require('./bragi/symbols');
         }
 
         // Ensure it does not exist
-        var i=0, len=groupsEnabled.length;
-        for(i=0;i<len;i++){
+        var i = 0, len = groupsEnabled.length;
+        for(i = 0; i < len; i++){
             if(groupsEnabled[i].toString() === group.toString()){
                 return LOGGER;
             }
@@ -221,10 +218,10 @@ var SYMBOLS = require('./bragi/symbols');
         }
 
         // Ensure it does not exist
-        var i=0, len=groupsEnabled.length;
+        var i = 0, len = groupsEnabled.length;
         var groupsEnabledWithoutGroup = [];
 
-        for(i=0;i<len;i++){
+        for(i = 0; i < len; i++){
             if(groupsEnabled[i].toString() !== group.toString()){
                 groupsEnabledWithoutGroup.push( groupsEnabled[i] );
             }
@@ -242,18 +239,11 @@ var SYMBOLS = require('./bragi/symbols');
     //
     // ----------------------------------
     LOGGER.util.print = function print(message, color){
-        // Utility function for printing a passed in message and giving it some 
-        // color
-        //
-        // Color can be any one of 'red', 'white',', 'grey', 'black', 'blue',
-        // 'cyan', 'green', 'magenta', 'red', or 'yellow',
-        //
-        // It returns a string that is colored based on the passed in color
-        // 
-        // If no color was passed in, use black
-        color = color ? color : 'black';
-
-        return LOGGER.util.colors[color] + message  + LOGGER.util.colors.reset;
+        // NOTE: This is a stub function which exists in Bragi, but not in
+        // the browser version. We could print individual colors, but it 
+        // requires adding an additional CSS string to console.log(). This is
+        // a TODO
+        return message;
     };
 
     // ----------------------------------
@@ -318,14 +308,14 @@ var SYMBOLS = require('./bragi/symbols');
         // remove the group and message from the args array, so the new args array will
         // just be an array of the passed in arguments
         var extraArgs = Array.prototype.slice.call(arguments, 2);
-        
+
         // ----------------------------------
         // Build up a `loggedObject`, a structured object containing log 
         // information. It can be output to the console, to another file, to
         // a remote host, etc.
         // ------------------------------
         var loggedObject = {};
-        
+
         // Caller info
         var caller = null;
 
@@ -337,8 +327,8 @@ var SYMBOLS = require('./bragi/symbols');
             if(loggerLog.caller && loggerLog.caller.name){
                 caller = loggerLog.caller.name;
             } else if((loggerLog.caller+'').indexOf('function ()') === 0){
-                caller = 'anonymous function'; 
-            } 
+                caller = 'anonymous function';
+            }
         }
 
         // Setup properties on the loggedObject based on passed in properties
@@ -348,10 +338,10 @@ var SYMBOLS = require('./bragi/symbols');
         // NOTE: All properties set by Bragi are prefixed with an underscore
         loggedObject.properties = {};
         loggedObject.originalArgs = [];
-        
-        for(var i=0; i< extraArgs.length; i++){
+
+        for(var i = 0; i < extraArgs.length; i++){
             // For each argument, we need to check its type. If it's an object, then
-            // we'll extend the loggedObject `properties` object 
+            // we'll extend the loggedObject `properties` object
             // (if there are multiple keys, the last
             // key found takes priority). If it's an array or any other data type,
             // we'll set a new property called `argumentX` and set the value
@@ -388,10 +378,10 @@ var SYMBOLS = require('./bragi/symbols');
                 var stackLength = stack.length;
                 var trace = [];
 
-                for(i=1; i < stack.length; i++){
+                for(i = 1; i < stack.length; i++){
                     trace.push(stack[i] + '');
                 }
-                
+
                 loggedObject.meta.file = stack[1].getFileName();
                 loggedObject.meta.line = stack[1].getLineNumber();
                 loggedObject.meta.column = stack[1].getColumnNumber();
@@ -411,19 +401,22 @@ var SYMBOLS = require('./bragi/symbols');
         // ----------------------------------
         // The loggedObject is setup now, call each of the transport log calls that
         // can be called
-        for(i=0, len=transportFuncsToCall.length; i<len; i++){
+        var len;
+        for(i = 0, len = transportFuncsToCall.length; i < len; i++){
             transportFuncsToCall[i].log.call( transportFuncsToCall[i], loggedObject );
         }
     };
 
     // Expose this to the window
     if(!(typeof define === 'function' && define.amd)) {
-        window.BRAGI = LOGGER;
+        if (typeof window === 'object') {
+            window.BRAGI = LOGGER;
+        }
     }
     return LOGGER;
 }));
 
-},{"./bragi/canLog":2,"./bragi/styles":3,"./bragi/symbols":4,"./bragi/transports":5,"./bragi/transports/Transports":8,"util":13}],2:[function(require,module,exports){
+},{"./bragi/canLog":2,"./bragi/symbols":3,"./bragi/transports":4,"./bragi/transports/Transports":7,"util":12}],2:[function(require,module,exports){
 /* =========================================================================
  *
  * canLog
@@ -512,59 +505,19 @@ module.exports = canLog;
 },{}],3:[function(require,module,exports){
 /* =========================================================================
  *
- *  styles
- *      Defines styles / colors for logger
- *
- * ========================================================================= */
-module.exports = {
-    colors: {
-        white: '\x1B[37m',
-        grey: '\x1B[90m',
-        gray: '\x1B[90m',
-        black: '\x1B[30m',
-        blue: '\x1B[34m',
-        cyan: '\x1B[36m',
-        green: '\x1B[32m',
-        magenta: '\x1B[35m',
-        red: '\x1B[31m',
-        yellow: '\x1B[33m',
-        reset: '\033[0m'
-    },
-    styles: {
-        blink: '\x1B[49;5;8m',
-        underline: '\x1B[4m', 
-        bold: '\x1B[1m'
-    },
-    backgrounds: {
-        white: '\x1B[47m',
-        black: '\x1B[40m',
-        blue: '\x1B[44m',
-        cyan: '\x1B[46m',
-        green: '\x1B[42m',
-        magenta: '\x1B[45m',
-        red: '\x1B[41m',
-        yellow: '\x1B[43m'
-    }
-};
-
-},{}],4:[function(require,module,exports){
-/* =========================================================================
- *
  *  symbols
  *      Defines special symbols used by logger
  *
  * ========================================================================= */
-var STYLES = require('./styles');
-
 module.exports = {
-    success: STYLES.colors.green + '✔︎ ' + STYLES.colors.reset,
-    error: STYLES.colors.red + '✘ ' + STYLES.colors.reset,
-    warn: STYLES.colors.yellow + '⚑ ' + STYLES.colors.reset,
+    success: '✔︎ ',
+    error: '✘ ',
+    warn: '⚑ ',
     arrow: '➤ ',
     star: '☆ ',
-    box: STYLES.colors.yellow + '☐ ' + STYLES.colors.reset,
-    boxSuccess: STYLES.colors.green + '☑︎ ' + STYLES.colors.reset,
-    boxError: STYLES.colors.red + '☒ ' + STYLES.colors.reset,
+    box: '☐ ',
+    boxSuccess: '☑︎ ',
+    boxError: '☒ ',
     circle: '◯ ',
     circleFilled: '◉ ',
     asterisk: '✢',
@@ -581,7 +534,7 @@ module.exports = {
     atom: '⚛'
 };
 
-},{"./styles":3}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /* =========================================================================
  *  transports
  *      Handles all transports
@@ -597,27 +550,28 @@ for(var file in files){
 
 module.exports = transports;
 
-},{"./transports/index":9}],6:[function(require,module,exports){
+},{"./transports/index":8}],5:[function(require,module,exports){
 /* =========================================================================
  *
  * Console
  *      Default transport - console
  *
  * ========================================================================= */
-var STYLES = require('../styles');
 var SYMBOLS = require('../symbols');
 
-// In < IE10 console is undefined unless the developer tools have at some 
+// In < IE10 console is undefined unless the developer tools have at some
 // point been opened in that tab. However, even after console and console.log
 // exist, typeof console.log still evaluate to object, not function, so
 // methods like .apply will cause errors
-if (window.console && window.console.log) {
-    if (typeof window.console.log !== 'function') {
+if (typeof window === 'object') {
+    if (window.console && window.console.log) {
+        if (typeof window.console.log !== 'function') {
+            window.console.log = function () {};
+        }
+    } else {
+        window.console = {};
         window.console.log = function () {};
     }
-} else {
-    window.console = {};
-    window.console.log = function () {};
 }
 
 // --------------------------------------
@@ -625,38 +579,38 @@ if (window.console && window.console.log) {
 // Setup group Colors to print
 //
 // --------------------------------------
-GROUP_COLORS = [
+var GROUP_COLORS = [
     // first is BG color, second is foreground color, third is border
-    ['#3182bd', '#ffffff', '#225588'], 
-    ['#f38630', '#ffffff'], 
+    ['#3182bd', '#ffffff', '#225588'],
+    ['#f38630', '#ffffff'],
     ['#e0e4cc', '#000000', '#c8cbb6'],
-    ['#8c510a', '#ffffff'], 
-    ['#35978f', '#ffffff', "#13756d"], 
-    ['#c51b7d', '#ffffff'], 
-    ['#c6dbef', '#000000'], 
-    ['#af8dc3', '#000000'], 
-    ['#543005', '#ffffff', "#321002"], 
-    ['#7fbf7b', '#000000'], 
-    ['#dfc27d', '#000000', "#bda05b"], 
-    ['#f5f5f5', '#000000'], 
-    ['#e9a3c9', '#000000'], 
-    ['#59323C', '#ffffff'], 
-    ['#66c2a5', '#000000'], 
-    ['#f6e8c3', '#000000'], 
-    ['#606060', '#f0f0f0'], 
-    ['#8c510a', '#ffffff'], 
-    ['#80cdc1', '#000000'], 
-    ['#542788', '#ffffff'], 
+    ['#8c510a', '#ffffff'],
+    ['#35978f', '#ffffff', "#13756d"],
+    ['#c51b7d', '#ffffff'],
+    ['#c6dbef', '#000000'],
+    ['#af8dc3', '#000000'],
+    ['#543005', '#ffffff', "#321002"],
+    ['#7fbf7b', '#000000'],
+    ['#dfc27d', '#000000', "#bda05b"],
+    ['#f5f5f5', '#000000'],
+    ['#e9a3c9', '#000000'],
+    ['#59323C', '#ffffff'],
+    ['#66c2a5', '#000000'],
+    ['#f6e8c3', '#000000'],
+    ['#606060', '#f0f0f0'],
+    ['#8c510a', '#ffffff'],
+    ['#80cdc1', '#000000'],
+    ['#542788', '#ffffff'],
     ['#FB8AFE', '#343434'],
-    ['#003c30', '#ffffff'], 
-    ['#e6f598', '#000000'], 
+    ['#003c30', '#ffffff'],
+    ['#e6f598', '#000000'],
     ['#c7eae5', '#000000'],
-    ['#000000', '#f0f0f0'], 
+    ['#000000', '#f0f0f0'],
     ['#C3FF0E', '#343434']
 ];
-OVERFLOW_SYMBOLS = [
-    'asterisk', 'floral', 'snowflake', 'fourDiamond', 'spade', 'club', 'heart', 
-    'diamond', 'queen', 'rook', 'pawn', 'atom' 
+var OVERFLOW_SYMBOLS = [
+    'asterisk', 'floral', 'snowflake', 'fourDiamond', 'spade', 'club', 'heart',
+    'diamond', 'queen', 'rook', 'pawn', 'atom'
 ];
 
 var BASE_CSS = 'padding: 2px; margin:2px; line-height: 1.8em;';
@@ -669,9 +623,9 @@ var META_STYLE = BASE_CSS + 'font-size:0.9em; color: #cdcdcd; padding-left:30px;
 // ======================================
 function TransportConsole ( options ){
     options = options || {};
-    // Transport must set groupsEnabled and groupsDisabled to provide transport 
+    // Transport must set groupsEnabled and groupsDisabled to provide transport
     // level support for overriding what groups to log
-    // (NOTE - the user does not need to pass in groupsEnabled, but the 
+    // (NOTE - the user does not need to pass in groupsEnabled, but the
     // transport must set these properties)
     this.groupsEnabled = options.groupsEnabled;
     this.groupsDisabled = options.groupsDisabled;
@@ -697,7 +651,7 @@ function TransportConsole ( options ){
     this.showColors = options.showColors === undefined ? true : options.showColor;
 
     this._foundColors = [];
-    this._colorDict = { 
+    this._colorDict = {
         error: BASE_CSS + 'background: #ff0000; color: #ffffff; font-style: bold; border: 4px solid #cc0000;',
         warn: BASE_CSS + 'padding: 2px; background: #ffff00; color: #343434; font-style: bold; border: 4px solid #cccc00;'
     };
@@ -723,7 +677,7 @@ TransportConsole.prototype.getColor = function getColor(group){
     group = group.split(':')[0];
 
     // if a color exists for the passed in log group, use it
-    if(this._colorDict[group]){ 
+    if(this._colorDict[group]){
         return this._colorDict[group];
     }
 
@@ -747,7 +701,7 @@ TransportConsole.prototype.getColor = function getColor(group){
     // and use the result
     if(!color[2]){
         borderColor = '#';
-        for(var i=1; i<color[0].length; i++){
+        for(var i = 1; i < color[0].length; i++){
             borderColor += (
                 (Math.max( 0, (parseInt(color[0][i], 16) - 2) )).toString(16)
             );
@@ -755,9 +709,9 @@ TransportConsole.prototype.getColor = function getColor(group){
     }
 
 
-    cssString += BASE_CSS + 
+    cssString += BASE_CSS +
         "background: " + color[0] + ";" +
-        "border: 1px solid " + borderColor + ";" + 
+        "border: 1px solid " + borderColor + ";" +
         "color: " + color[1] + ";";
 
     // update the stored color info
@@ -791,18 +745,20 @@ TransportConsole.prototype.log = function transportConsoleLog( loggedObject ){
         consoleMessage += "%c";
     }
 
+    var i;
+
     // Setup final log message format, depending on if it's a browser or not
     // ------------------------------
-    consoleMessage += 
-        "[ " + 
-            loggedObject.group + ' ' + 
+    consoleMessage +=
+        "[ " +
+            loggedObject.group + ' ' +
         " ] \t";
 
     // NOTE: Use the full styledMessage property
-    consoleMessage += loggedObject.message + ' \t'; 
+    consoleMessage += loggedObject.message + ' \t';
 
     // add line break to console messages if set
-    if(this.addLineBreak){ 
+    if(this.addLineBreak){
         consoleMessage += '\n';
     }
 
@@ -828,7 +784,7 @@ TransportConsole.prototype.log = function transportConsoleLog( loggedObject ){
     if(this.showMeta){
         // push style for meta if there is meta
         if(this.showColors){
-            metaConsoleMessage += '%c'; 
+            metaConsoleMessage += '%c';
         }
 
         // JSON timestamp
@@ -841,23 +797,23 @@ TransportConsole.prototype.log = function transportConsoleLog( loggedObject ){
 
         // For node, log line number and filename
         if(loggedObject.meta.file && loggedObject.meta.line ){
-            metaConsoleMessage +=  loggedObject.meta.file +
+            metaConsoleMessage += loggedObject.meta.file +
                 ':' + loggedObject.meta.line +
                 ':' + loggedObject.meta.column +
                 '';
         }
     }
 
-    if(this.showMeta && this.showStackTrace && loggedObject.meta.trace){ 
+    if(this.showMeta && this.showStackTrace && loggedObject.meta.trace){
         // Show full stack trace if set
         // --------------------------
-        metaConsoleMessage += '\n' + 
+        metaConsoleMessage += '\n' +
             '(Stack Trace)' +
             '\n';
-        
+
         // Skip the first item in the stack (this function)
-        for(i=0; i<loggedObject.meta.trace.length; i++){
-            metaConsoleMessage += '\t' + 
+        for(i = 0; i < loggedObject.meta.trace.length; i++){
+            metaConsoleMessage += '\t' +
                 loggedObject.meta.trace[i] + '\n';
         }
     }
@@ -877,7 +833,7 @@ TransportConsole.prototype.log = function transportConsoleLog( loggedObject ){
 
 module.exports = TransportConsole;
 
-},{"../styles":3,"../symbols":4}],7:[function(require,module,exports){
+},{"../symbols":3}],6:[function(require,module,exports){
 /* =========================================================================
  *
  * History
@@ -946,7 +902,7 @@ TransportHistory.prototype.log = function transportHistoryLog( loggedObject ){
 
 module.exports = TransportHistory;
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /* =========================================================================
  *
  * Transports
@@ -1087,7 +1043,7 @@ Transports.prototype.empty = function empty (){
 
 module.exports = Transports;
 
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /* =========================================================================
  *
  * index.js
@@ -1097,32 +1053,7 @@ module.exports = Transports;
 module.exports.Console = require('./Console');
 module.exports.History = require('./History');
 
-},{"./Console":6,"./History":7}],10:[function(require,module,exports){
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-},{}],11:[function(require,module,exports){
+},{"./Console":5,"./History":6}],9:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1187,14 +1118,39 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+},{}],11:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1784,4 +1740,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":12,"_process":11,"inherits":10}]},{},[1]);
+},{"./support/isBuffer":11,"_process":9,"inherits":10}]},{},[1]);
